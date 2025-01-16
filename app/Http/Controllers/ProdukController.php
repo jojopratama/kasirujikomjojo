@@ -12,7 +12,10 @@ class ProdukController extends Controller
      */
     public function index()
     {
-        //
+        $title = 'Produk';
+        $subtitle = 'Index';
+        $produks = Produk::all();
+        return view('admin.produk.index', compact('title','subtitle','produks'));
     }
 
     /**
@@ -20,7 +23,10 @@ class ProdukController extends Controller
      */
     public function create()
     {
-        //
+        $title = 'Produk';
+        $subtitle = 'Create';
+        $produks = Produk::all();   
+        return view('admin.produk.create',compact('title','subtitle'));
     }
 
     /**
@@ -28,7 +34,19 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = $request->validate([
+            'NamaProduk'=> 'required',
+            'Harga'=> 'required|numeric ',
+            'Stok'=> 'required|numeric',
+            ]);
+
+            $simpan = Produk::create($validate);
+            if($simpan){
+                return response()->json(['status' => 200, 'message' => 'Produk Berhasil']);
+            }else{
+                return response()->json(['status' => 500, 'message' => 'Produk Gagal']);
+            }
+
     }
 
     /**
