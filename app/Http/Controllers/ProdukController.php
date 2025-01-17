@@ -60,9 +60,12 @@ class ProdukController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Produk $produk)
+    public function edit($id)
     {
-        //
+        $title = 'Produk';
+        $subtitle = 'Edit';
+        $produk = Produk::find($id);
+        return view('admin.produk.edit',compact('title','subtitle','produk'));
     }
 
     /**
