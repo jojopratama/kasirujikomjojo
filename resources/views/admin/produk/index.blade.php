@@ -40,6 +40,12 @@
             <div class="card-header">
                 <h3 class="card-title">{{ $title }}</h3>
                 <a href="{{ route('produk.create') }}" class="btn btn-sm btn-primary float-right">Tambah</a>
+                @if (session()->has('success'))
+                <div class="alert alert-success">
+                  {{ session('success') }}
+                </div>
+                  
+                @endif
             </div>
             <div class="card-body">
                 <table id="example1" class="table table-bordered table-striped">
@@ -60,7 +66,7 @@
             <td>{{ rupiah($produk->Harga) }}</td>
             <td>{{ $produk->Stok }}</td>
             <td>
-                <form action="{{ route('produk.destroy', $produk->id) }}"method="POST">
+                <form id="form-delete-produk" action="{{ route('produk.destroy', $produk->id) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <a href="{{ route('produk.edit',$produk->id) }}"
@@ -102,6 +108,25 @@
         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
       }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
     });
+  </script>
+
+  <script>
+    $("#form-delete-produk").submit(function(e){
+      e.preventDefault();
+      Swal.fire({
+        title: 'Apakah Anda Yakin?',
+        text: "Data Tidak Akan Bisa Kembali!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColour: '#3085d6',
+        cancelButtonColour: '#d33',
+        confirmButtonText: 'Ya, Hapus Data Ini!'
+      }).then((result)->{
+        if (result.isConfirmed){
+          $(this).unbind().submit();
+        }
+      })
+    })
   </script>
 @endsection
   

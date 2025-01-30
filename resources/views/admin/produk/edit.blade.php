@@ -83,7 +83,7 @@
 
       // Kirim AJAX request
       $.ajax({
-        type: "POST",
+        type: "PUT",
         url: "{{ route('produk.update',':id') }}".replace(':id' , {{ $produk->id }}),
         data: dataForm,
         dataType: "json",
@@ -93,10 +93,11 @@
             title: 'Success',
             text: data.message || "Produk berhasil disimpan!",
             confirmButtonText: 'Ok'
-          });
-
-          // Reset form setelah submit berhasil
-          $('#form-create-produk')[0].reset();
+          }).then((result) =>{
+            if (result.isConfirmed){
+              window.location.href = "{{ route ('produk.index') }}";
+            }
+          })
         },
         error: function(xhr){
           console.error(xhr.responseJSON);
