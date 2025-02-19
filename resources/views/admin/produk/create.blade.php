@@ -53,6 +53,7 @@
             </div>
             <div class="card-body">
               <form id="form-create-produk" method="post">
+                @csrf
                 <label for="">Nama Produk</label>
                 <input type="text" name="NamaProduk" class="form-control" required>
                 <label for="">Harga</label>
@@ -73,52 +74,42 @@
 
   @section('js')
 
-<script>
-  $(document).ready(function(){
-    $("#form-create-produk").submit(function(e){
-      e.preventDefault();
-
-      // Ambil data form
-      var dataForm = $(this).serialize() + "&_token={{ csrf_token() }}";
-
-      // Kirim AJAX request
-      $.ajax({
-        type: "POST",
-        url: "{{ route('produk.store') }}",
-        data: dataForm,
-        dataType: "json",
-        success: function(data){
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: data.message || "Produk berhasil disimpan!",
-            confirmButtonText: 'Ok'
-          });
-
-          // Reset form setelah submit berhasil
-          $('#form-create-produk')[0].reset();
-        },
-        error: function(xhr){
-          console.error(xhr.responseJSON);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: xhr.responseJSON.message || "Terjadi kesalahan saat menyimpan produk.",
-            confirmButtonText: 'Ok'
-          });
-
-          // Tampilkan error 500 jika ada
-          if(xhr.status === 500){
+  <script>
+    $(document).ready(function(){
+      $("#form-create-produk").submit(function(e){
+        e.preventDefault();
+  
+        // Ambil data form
+        var dataForm = $(this).serialize();
+  
+        // Kirim AJAX request
+        $.ajax({
+          type: "POST",
+          url: "{{ route('produk.store') }}",
+          data: dataForm,
+          dataType: "json",
+          success: function(data){
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: data.message || "Produk berhasil disimpan!",
+              confirmButtonText: 'Ok'
+            }).then(() => {
+              // Reset form setelah submit berhasil
+              $('#form-create-produk')[0].reset();
+            });
+          },
+          error: function(xhr){
             Swal.fire({
               icon: 'error',
-              title: 'Server Error',
-              text: xhr.responseJSON.message || "Internal Server Error.",
+              title: 'Error',
+              text: xhr.responseJSON?.message || "Terjadi kesalahan saat menyimpan produk.",
               confirmButtonText: 'Ok'
             });
           }
-        }
+        });
       });
     });
-  });
-</script>
+  </script>
+  
 @endsection

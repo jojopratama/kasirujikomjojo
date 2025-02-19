@@ -5,7 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Produk extends Model
+class LogStok extends Model
 {
-    protected $fillable = ['NamaProduk','Harga','Stok', 'Users_id'];
+    protected $fillable = [
+        'produk_id',
+        'jumlah',
+        'users_id',
+
+    ];
 }

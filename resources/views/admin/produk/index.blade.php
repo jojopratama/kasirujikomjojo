@@ -5,7 +5,31 @@
  <link rel="stylesheet" href="{{asset ('')}}plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
  <link rel="stylesheet" href="{{asset ('')}}plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
  <link rel="stylesheet" href="{{asset ('')}}plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-    
+    <!-- Modal -->
+<div class="modal fade" id="modalTambahStok" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Tambah Stok</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="form-tambah-stok" method="post">
+        @csrf
+      <div class="modal-body">
+        <input type="hidden" name="id_produk" id="id_produk">
+        <label for="">Jumlah Stok</label>
+        <input type="number" name="stok" id="nilaiTambahStok" class="form-control" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
 @endsection
 @section('content')
     
@@ -72,6 +96,12 @@
                 <a href="{{ route('produk.edit',$produk->id) }}"
                     class="btn btn-sm btn-primary">Edit</a>
                     <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                   <!-- Button trigger modal -->
+<button type="button" class="btn btn-sm btn-warning" id="btnTambahStok" data-toggle="modal" data-target="#modalTambahStok" data-id_produk="{{ $produk->id }}">
+ Tambah Stok
+</button>
+
+
             
                 </form>
         </tr>
@@ -110,23 +140,72 @@
     });
   </script>
 
-  <script>
-    $("#form-delete-produk").submit(function(e){
+<script>
+  // Mengisi ID produk ke dalam modal tambah stok
+  $(document).on('click', '#btnTambahStok', function () {
+      let id_produk = $(this).data('id_produk');
+      $('#id_produk').val(id_produk);
+  });
+
+  // Handle form tambah stok
+  $(document).on('submit', '#form-tambah-stok', function (e) {
       e.preventDefault();
+
+      let dataForm = $(this).serialize();
+      let id_produk = $('#id_produk').val();
+
+      $.ajax({
+          type: "PUT",
+          url: "{{ route('produk.tambahStok', ':id') }}".replace(':id', id_produk),
+          data: dataForm,
+          dataType: "json",
+          success: function (data) {
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Sukses',
+                  text: data.message,
+                  confirmButtonText: 'Ok'
+              }).then((result) => {
+                  if (result.isConfirmed) {
+                      window.location.href = "{{ route('produk.index') }}";
+                  }
+              });
+              $('#modalTambahStok').modal('hide');
+              $('#form-tambah-stok')[0].reset();
+          },
+          error: function (xhr) {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi kesalahan',
+                  confirmButtonText: 'Ok'
+              });
+          }
+      });
+  });
+
+  // Konfirmasi sebelum hapus produk
+  $(document).on('submit', '#form-delete-produk', function (e) {
+      e.preventDefault();
+      let form = this;
+
       Swal.fire({
-        title: 'Apakah Anda Yakin?',
-        text: "Data Tidak Akan Bisa Kembali!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColour: '#3085d6',
-        cancelButtonColour: '#d33',
-        confirmButtonText: 'Ya, Hapus Data Ini!'
-      }).then((result)->{
-        if (result.isConfirmed){
-          $(this).unbind().submit();
-        }
-      })
-    })
+          title: 'Apakah Anda Yakin?',
+          text: "Data tidak akan bisa kembali",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, Hapus Data Ini!'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              form.submit();
+          }
+      });
+  });
+</script>
+
+
   </script>
 @endsection
   

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LogStok;
 use App\Models\Produk;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProdukController extends Controller
 {
@@ -38,7 +40,7 @@ class ProdukController extends Controller
             'Harga' => 'required|numeric',
             'Stok' => 'required|numeric',
         ]);
-
+        $validate['Users_id'] = Auth::user()->id;
         $simpan = Produk::create($validate);
         
         if ($simpan) {
@@ -74,7 +76,7 @@ class ProdukController extends Controller
             'Harga' => 'required|numeric',
             'Stok' => 'required|numeric',
         ]);
-        
+        $validate['Users_id'] = Auth::user()->id;
         $simpan = $produk->update($validate);
         
         if ($simpan) {
@@ -97,4 +99,32 @@ class ProdukController extends Controller
             return redirect(route('produk.index'))->with('error','Produk Gagal Dihapus!');
         }
     }
+
+    public function tambahStok(Request $request, $id)
+    {
+        $validate = $request->validate([
+            'stok' => 'required|numeric|min:1',
+        ]);
+    
+        $produk = Produk::findOrFail($id);
+        $produk->Stok += $validate['stok'];
+        $update = $produk->save();
+    
+        if ($update) {
+            return response()->json(['status' => 200, 'message' => 'Stok berhasil ditambahkan']);
+        } else {
+            return response()->json(['status' => 500, 'message' => 'Stok gagal ditambahkan']);
+        }
+    }
+
+    public function logproduk()
+    {
+        $title = 'Produk';
+        $subtitle = 'Log Produk';
+        $produks = LogStok::join('produks', 'log_stoks.ProdukId', '=', 'produks.id')
+        ->join('users','log_stoks.UsersId','=','users.id')
+        ->select('log_stoks.JumlahProduk','log_stoks.created_at','produks.NamaProduk','users.name');
+        return view('admin.produk.logproduk', compact('title','subtitle','produks'));
+    }
+    
 }
