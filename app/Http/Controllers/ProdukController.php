@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ProdukController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $title = 'Produk';
@@ -20,9 +17,6 @@ class ProdukController extends Controller
         return view('admin.produk.index', compact('title', 'subtitle', 'produks'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $title = 'Produk';
@@ -30,9 +24,6 @@ class ProdukController extends Controller
         return view('admin.produk.create', compact('title', 'subtitle'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validate = $request->validate([
@@ -40,35 +31,17 @@ class ProdukController extends Controller
             'Harga' => 'required|numeric',
             'Stok' => 'required|numeric',
         ]);
-        $validate['Users_id'] = Auth::user()->id;
+        
+        $validate['Users_Id'] = Auth::id();
         $simpan = Produk::create($validate);
         
         if ($simpan) {
-            return response()->json(['status' => 200, 'message' => 'Produk Berhasil']);
+            return response()->json(['status' => 200, 'message' => 'Produk Berhasil Ditambahkan']);
         } else {
-            return response()->json(['status' => 500, 'message' => 'Produk Gagal']);
+            return response()->json(['status' => 500, 'message' => 'Produk Gagal Ditambahkan']);
         }
     }
 
-    public function show($id)
-    {
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        $title = 'Produk';
-        $subtitle = 'Edit';
-        $produk = Produk::findOrFail($id);
-        return view('admin.produk.edit', compact('title', 'subtitle', 'produk'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Produk $produk)
     {
         $validate = $request->validate([
@@ -76,27 +49,14 @@ class ProdukController extends Controller
             'Harga' => 'required|numeric',
             'Stok' => 'required|numeric',
         ]);
-        $validate['Users_id'] = Auth::user()->id;
+        
+        $validate['Users_Id'] = Auth::id();
         $simpan = $produk->update($validate);
         
         if ($simpan) {
             return response()->json(['status' => 200, 'message' => 'Produk Berhasil Diubah']);
         } else {
-            return response()->json(['status' => 500, 'message' => 'Produk Gagal']);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id)
-    {
-        $produk = Produk::find($id);
-        $delete = $produk->delete();
-        if ($delete) {
-            return redirect(route('produk.index'))->with('success','Produk Berhasil Dihapus!');
-        } else {
-            return redirect(route('produk.index'))->with('error','Produk Gagal Dihapus!');
+            return response()->json(['status' => 500, 'message' => 'Produk Gagal Diubah']);
         }
     }
 
@@ -108,23 +68,34 @@ class ProdukController extends Controller
     
         $produk = Produk::findOrFail($id);
         $produk->Stok += $validate['stok'];
+    
         $update = $produk->save();
     
+        // Simpan ke log_stoks secara manual (jika Users_Id tidak bisa didapat dari trigger)
         if ($update) {
+            LogStok::create([
+                'ProdukId' => $produk->id,
+                'JumlahProduk' => $validate['stok'],
+                'Users_Id' => Auth::user()->id, // Pastikan user login
+            ]);
+    
             return response()->json(['status' => 200, 'message' => 'Stok berhasil ditambahkan']);
         } else {
             return response()->json(['status' => 500, 'message' => 'Stok gagal ditambahkan']);
         }
     }
+    
 
     public function logproduk()
     {
         $title = 'Produk';
         $subtitle = 'Log Produk';
+        
         $produks = LogStok::join('produks', 'log_stoks.ProdukId', '=', 'produks.id')
-        ->join('users','log_stoks.UsersId','=','users.id')
-        ->select('log_stoks.JumlahProduk','log_stoks.created_at','produks.NamaProduk','users.name');
-        return view('admin.produk.logproduk', compact('title','subtitle','produks'));
-    }
+            ->join('users', 'log_stoks.Users_Id', '=', 'users.id')
+            ->select('log_stoks.JumlahProduk', 'log_stoks.created_at', 'produks.NamaProduk', 'users.name')
+            ->get();
     
+        return view('admin.produk.logproduk', compact('title', 'subtitle', 'produks'));
+    }
 }

@@ -21,15 +21,21 @@ return new class extends Migration
         });
 
         DB::unprepared('
-        CREATE TRIGGER log_stok 
-        AFTER UPDATE ON produks 
-        FOR EACH ROW
-        BEGIN 
-            INSERT INTO log_stoks (ProdukId, JumlahProduk, UsersId) 
-            VALUES (NEW.id, NEW.Stok - OLD.Stok, NEW.UsersId); 
-        END;
-    ');
-    
+            Create Trigger log_stok
+            After Update on produks
+            For Each Row
+            Begin
+                Insert Into log_stoks
+                (ProdukId, JumlahProduk, UsersId, created_at)
+                Values
+                (
+                    New.id,
+                    New.Stok - Old.Stok,
+                    New.Users_id,
+                    Now()
+                );
+            End;
+        ');
     }
 
     /**
@@ -37,15 +43,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-
-
         Schema::dropIfExists('log_stoks');
-        // Hapus trigger sebelum menghapus tabel
-        DB::unprepared('
-            DELIMITER $$ 
-            DROP TRIGGER IF EXISTS log_stok
-        ');
-
-      
+        DB::unprepared('DROP TRIGGER IF EXISTS log_stok');
     }
 };
