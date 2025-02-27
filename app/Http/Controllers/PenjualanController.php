@@ -45,7 +45,7 @@ class PenjualanController extends Controller
     public function edit(penjualan $penjualan)
     {
         //
-    }
+}
 
     /**
      * Update the specified resource in storage.

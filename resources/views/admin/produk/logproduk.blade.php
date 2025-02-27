@@ -64,9 +64,10 @@
         <tr>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $produk->NamaProduk }}</td>
-            <td>{{ $produk->JumlahStok }}</td>
+            <td>{{ $produk->JumlahProduk }}</td>
             <td>{{ $produk->name }}</td>
-            <td>{{ $produk->created_at }}</td>
+            <td>{{ $produk->created_at->diffForHumans() }}</td>
+
         </tr>
     @endforeach
 </tbody>

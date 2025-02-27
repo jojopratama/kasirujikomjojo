@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 return new class extends Migration
 {
@@ -16,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('ProdukId');
             $table->integer('JumlahProduk');
-            $table->unsignedBigInteger('UsersId');
+            $table->unsignedBigInteger('Users_Id');
             $table->timestamps();
         });
 
@@ -25,17 +26,10 @@ return new class extends Migration
             After Update on produks
             For Each Row
             Begin
-                Insert Into log_stoks
-                (ProdukId, JumlahProduk, UsersId, created_at)
-                Values
-                (
-                    New.id,
-                    New.Stok - Old.Stok,
-                    New.Users_id,
-                    Now()
-                );
-            End;
-        ');
+                INSERT INTO log_stoks (ProdukId, JumlahProduk, Users_Id, created_at) 
+        VALUES (NEW.ProdukId, NEW.Stok - OLD.Stok, NEW.Users_Id, "' . Carbon::now('Asia/Jakarta') . '");
+    END;
+');
     }
 
     /**

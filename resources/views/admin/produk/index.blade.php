@@ -15,17 +15,17 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form id="form-tambah-stok" method="post">
+      <form id="form-tambah-stok" method="POST">
         @csrf
-      <div class="modal-body">
-        <input type="hidden" name="id_produk" id="id_produk">
-        <label for="">Jumlah Stok</label>
-        <input type="number" name="stok" id="nilaiTambahStok" class="form-control" required>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Submit</button>
-      </div>
+        <div class="modal-body">
+          <input type="hidden" name="id_produk" id="id_produk">
+          <label for="">Jumlah Stok</label>
+          <input type="number" name="stok" id="nilaiTambahStok" class="form-control" required>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
     </form>
     </div>
   </div>
@@ -72,9 +72,11 @@
                 @endif
             </div>
             <div class="card-body">
+              <button type="button" class="btn btn-primary mb-1" id="btnCetakLabel">Cetak Label</button>
                 <table id="example1" class="table table-bordered table-striped">
 <thead>
     <tr>
+      <th>#</th>
         <th>No</th>
         <th>Produk</th>
         <th>Harga</th>
@@ -85,6 +87,11 @@
 <tbody>
     @foreach ($produks as $produk)
         <tr>
+          <td>
+            <div class="form-check">
+              <input class="form-check-input" name="id_produk[]" type="checkbox" value="{{ $produk->id }}" id="id_produk_label">
+            </div>
+          </td>
             <td>{{ $loop->iteration }}</td>
             <td>{{ $produk->NamaProduk }}</td>
             <td>{{ rupiah($produk->Harga) }}</td>
@@ -147,7 +154,7 @@
       $('#id_produk').val(id_produk);
   });
 
-  // Handle form tambah stok
+  Handle form tambah stok
   $(document).on('submit', '#form-tambah-stok', function (e) {
       e.preventDefault();
 
@@ -204,8 +211,8 @@
       });
   });
 </script>
-
-
-  </script>
+<script>
+  $(document).on('')
+</script>
 @endsection
   

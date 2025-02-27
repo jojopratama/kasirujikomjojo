@@ -72,8 +72,7 @@
   </div>
   @endsection
 
-  @section('js')
-
+@section('js')
   <script>
     $(document).ready(function(){
       $("#form-create-produk").submit(function(e){
@@ -111,5 +110,4 @@
       });
     });
   </script>
-  
 @endsection

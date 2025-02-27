@@ -67,16 +67,15 @@ class ProdukController extends Controller
         ]);
     
         $produk = Produk::findOrFail($id);
+        $stokSebelumnya = $produk->Stok;
         $produk->Stok += $validate['stok'];
-    
         $update = $produk->save();
     
-        // Simpan ke log_stoks secara manual (jika Users_Id tidak bisa didapat dari trigger)
         if ($update) {
             LogStok::create([
                 'ProdukId' => $produk->id,
                 'JumlahProduk' => $validate['stok'],
-                'Users_Id' => Auth::user()->id, // Pastikan user login
+                'Users_Id' => Auth::id(),
             ]);
     
             return response()->json(['status' => 200, 'message' => 'Stok berhasil ditambahkan']);
@@ -84,7 +83,6 @@ class ProdukController extends Controller
             return response()->json(['status' => 500, 'message' => 'Stok gagal ditambahkan']);
         }
     }
-    
 
     public function logproduk()
     {
