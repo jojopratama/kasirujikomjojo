@@ -31,7 +31,7 @@
               @endforeach
             @endif
             <h3 class="card-title">{{ $subtitle }} {{ $title }}</h3>
-            <a href="{{ route('produk.index') }}" class="btn btn-sm btn-warning float-right"><i class="fas fa-arrow-left"></i> Kembali</a>
+            <a href="{{ route('user.index') }}" class="btn btn-sm btn-warning float-right"><i class="fas fa-arrow-left"></i> Kembali</a>
             <div id="error-container" style="display:none">
               <div class="alert alert-danger">
                 <p id="error-message"></p>
@@ -39,18 +39,29 @@
             </div>
           </div>
           <div class="card-body">
-            <form id="form-update-produk" method="POST">
+            <form id="form-update-user" method="POST">
               <div class="form-group">
-                <label for="" class="mt-1">Nama Produk</label>
-                <input type="text" name="NamaProduk" value="{{ $produk->NamaProduk }}" class="form-control" required>
+                <label for="" class="">Nama Lengkap</label>
+                <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" class="form-control" placeholder="Masukan Nama Lengkap" required>
               </div>
               <div class="form-group">
-                <label for="" class="mt-1">Harga</label>
-                <input type="text" name="Harga" value="{{ $produk->Harga }}" class="form-control" required>
+                <label for="" class="">Email</label>
+                <input type="email" name="email" value="{{ old('email', $user->email) }}" class="form-control" placeholder="Masukan Email" required>
               </div>
               <div class="form-group">
-                <label for="" class="mt-1">Stok</label>
-                <input type="text" name="Stok" value="{{ $produk->Stok }}" class="form-control" required>
+                <label for="" class="">Password <span class="font-weight-light">(Kosongkan jika tidak ingin diubah)</span></label>
+                <input type="password" name="password" class="form-control" placeholder="Masukan Password">
+              </div>
+              <div class="form-group">
+                <label for="" class="">Konfirmasi Password</label>
+                <input type="password" name="password_confirmation" class="form-control" placeholder="Masukan Konfirmasi Password">
+              </div>
+              <div class="form-group">
+                <label for="" class="">Role</label>
+                <select class="form-control" name="role" id="select2-role" >
+                  <option value="petugas" {{ $user->role == 'petugas' ? 'selected' : '' }}>Petugas</option>
+                  <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                </select>
               </div>
               <button class="btn btn-warning" type="submit"><i class="fas fa-save"></i> Update</button>
             </form>
@@ -64,14 +75,18 @@
 @section('js')
   <script>
     $(() => {
-      $(document).on('submit', '#form-update-produk', function(e) {
+      $('#select2-role').select2({
+        theme: 'bootstrap4'
+      });
+      
+      $(document).on('submit', '#form-update-user', function(e) {
         e.preventDefault();
 
-        var dataForm = $(this).serialize() + "&_token={{ csrf_token() }}" + "&id={{ $produk->id }}";
+        var dataForm = $(this).serialize() + "&_token={{ csrf_token() }}" + "&id={{ $user->id }}";
 
         $.ajax({
           method: "PUT",
-          url: "{{ route('produk.update', ':id') }}".replace(':id', {{ $produk->id }}),
+          url: "{{ route('user.update', ':id') }}".replace(':id', {{ $user->id }}),
           data: dataForm,
           dataType: "json",
           success: function(data) {
@@ -82,7 +97,7 @@
               confirmButtonText: 'Ok'
             }).then((result) => {
               if (result.isConfirmed) {
-                window.location.href = "{{ route('produk.index') }}";
+                window.location.href = "{{ route('user.index') }}";
               }
             })
           },
@@ -91,7 +106,7 @@
             Swal.fire({
               icon: 'error',
               title: 'Whoops!',
-              text: xhr.responseJSON.message || "Terjadi kesalahan saat menyimpan produk.",
+              text: xhr.responseJSON.message || "Terjadi kesalahan saat menyimpan user.",
               confirmButtonText: 'Ok'
             });
             if (xhr.status === 500) {

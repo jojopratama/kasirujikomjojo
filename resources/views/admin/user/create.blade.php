@@ -24,7 +24,7 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">{{$subtitle}} {{ $title }}</h3>
-          <a href="{{ route('produk.index') }}" class="btn btn-sm btn-warning float-right"><i class="fas fa-arrow-left"></i> Kembali</a>
+          <a href="{{ route('user.index') }}" class="btn btn-sm btn-warning float-right"><i class="fas fa-arrow-left"></i> Kembali</a>
           @if ($errors->any())
             @foreach ($errors->all() as $error)
               <div class="alert alert-danger" role="alert">
@@ -39,19 +39,30 @@
           </div>
         </div>
         <div class="card-body">
-          <form id="form-create-produk" method="POST">
+          <form id="form-create-user" method="POST">
             @csrf
             <div class="form-group">
-              <label for="" class="">Nama Produk</label>
-              <input type="text" name="NamaProduk" id="NamaProduk" class="form-control" placeholder="Masukan Nama" required>
+              <label for="" class="">Nama Lengkap</label>
+              <input type="text" name="name" id="name" class="form-control" placeholder="Masukan Nama Lengkap" required>
             </div>
             <div class="form-group">
-              <label for="" class="">Harga</label>
-              <input type="text" name="Harga" class="form-control" placeholder="Masukan Harga" required>
+              <label for="" class="">Email</label>
+              <input type="email" name="email" class="form-control" placeholder="Masukan Email" required>
             </div>
             <div class="form-group">
-              <label for="" class="">Stok</label>
-              <input type="text" name="Stok" class="form-control" placeholder="Masukan Stok" required>
+              <label for="" class="">Password</label>
+              <input type="password" name="password" class="form-control" placeholder="Masukan Password" required>
+            </div>
+            <div class="form-group">
+              <label for="" class="">Konfirmasi Password</label>
+              <input type="password" name="password_confirmation" class="form-control" placeholder="Masukan Konfirmasi Password" required>
+            </div>
+            <div class="form-group">
+              <label for="" class="">Role</label>
+              <select class="form-control" name="role" id="select2-role" >
+                <option value="petugas">Petugas</option>
+                <option value="admin">Admin</option>
+              </select>
             </div>
             <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Submit</button>
           </form>
@@ -65,14 +76,18 @@
 @section('js')
 <script>
   $(() => {
-    $(document).on('submit', '#form-create-produk', function (e) {
+    $('#select2-role').select2({
+      theme: 'bootstrap4'
+    });
+
+    $(document).on('submit', '#form-create-user', function (e) {
         e.preventDefault();
 
         var dataForm = $(this).serialize();
 
         $.ajax({
           method: "POST",
-          url: "{{ route('produk.store') }}",
+          url: "{{ route('user.store') }}",
           data: dataForm,
           dataType: "json",
           success: function(data) {
@@ -82,26 +97,31 @@
               text: data.message || "Produk berhasil disimpan!",
               confirmButtonText: 'Ok'
             }).then((result) => {
-              $('#form-create-produk')[0].reset();
+              $('#form-create-user')[0].reset();
 
               if (result.isConfirmed) {
-                window.location.href = "{{ route('produk.index') }}";
+                window.location.href = "{{ route('user.index') }}";
               }
             });
           },
           error: function(xhr) {
+            let errorMessages = "Terjadi kesalahan saat menyimpan user.";
+
+            if (xhr.responseJSON?.errors) {
+              errorMessages = Object.values(xhr.responseJSON.errors)
+                .flat()
+                .join("\n");
+            }
+
             Swal.fire({
               icon: 'error',
               title: 'Whoops!',
-              text: xhr.responseJSON?.message || "Terjadi kesalahan saat menyimpan produk.",
-              confirmButtonText: 'Ok'
+              text: errorMessages,
+              confirmButtonText: 'OK'
             });
           }
       });
     });
-
-    Mola.inputNominalRupiah('[name="Harga"]')
-    Mola.inputNumber('[name="Stok"]')
   });
 </script>
 @endsection

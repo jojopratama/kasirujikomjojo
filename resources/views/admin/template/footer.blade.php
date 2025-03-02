@@ -1,6 +1,6 @@
 <!-- /.content-wrapper -->
 <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
+    <strong>Copyright &copy; {{ Carbon\Carbon::now()->year }} <a href="#">JojoKasir</a>.</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
       <b>Version</b> 3.2.0
@@ -46,6 +46,10 @@
 <!-- AdminLTE App -->
 <script src="{{asset ('')}}dist/js/adminlte.js"></script>
 
+{{-- Jquery Block UI --}}
+<script src="{{ asset('plugins/jquery-block-ui/jquery-blockui.min.js') }}"></script>
+
+
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="{{asset ('')}}dist/js/pages/dashboard.js"></script>
 
@@ -68,5 +72,8 @@
 
 {{-- Global Function  --}}
 <script src="{{ asset('global.js') }}"></script>
+
+{{-- Select2 --}}
+<script src="{{ asset('plugins/select2/js/select2.min.js') }}"></script>
 </body>
 </html>
