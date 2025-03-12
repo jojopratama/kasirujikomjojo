@@ -20,16 +20,6 @@ return new class extends Migration
             $table->unsignedBigInteger('Users_Id');
             $table->timestamps();
         });
-
-        DB::unprepared('
-            Create Trigger log_stok
-            After Update on produks
-            For Each Row
-            Begin
-                INSERT INTO log_stoks (ProdukId, JumlahProduk, Users_Id, created_at) 
-        VALUES (NEW.ProdukId, NEW.Stok - OLD.Stok, NEW.Users_Id, "' . Carbon::now('Asia/Jakarta') . '");
-    END;
-');
     }
 
     /**
@@ -38,6 +28,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('log_stoks');
-        DB::unprepared('DROP TRIGGER IF EXISTS log_stok');
     }
 };
