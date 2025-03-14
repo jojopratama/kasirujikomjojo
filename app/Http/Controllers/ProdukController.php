@@ -119,21 +119,27 @@ class ProdukController extends Controller
         if (is_array($id_produk)) {
             // Jika $id_produk adalah array, proses setiap ID dalam array
             foreach ($id_produk as $id) {
-                $id = (string) $id; // Pastikan ID adalah string 
-                $harga = Produk::find($id)->Harga;
+                $id = (string) $id; // Pastikan ID adalah string
+                $produk = Produk::find($id);
+                $harga = $produk->Harga;
+                $nama = $produk->NamaProduk;
                 $barcode = DNS1DFacade::getBarcodeHTML($id, 'C128'); // Membuat barcode untuk setiap ID
-                $barcodes[] = ['barcode' => $barcode, 'harga' => $harga]; // Simpan barcode ke array
+                $barcodes[] = ['barcode' => $barcode, 'harga' => $harga, 'nama' => $nama]; // Simpan barcode ke array
             }
         } else {
             // Jika hanya satu nilai, konversi menjadi string dan proses
             $id_produk = (string) $id_produk;
-            $harga = Produk::find($id_produk)->Harga;
+            $produk = Produk::find($id_produk);
+            $harga = $produk->Harga;
+            $nama = $produk->NamaProduk;
             $barcode = DNS1DFacade::getBarcodeHTML($id_produk, 'C128'); // Membuat barcode untuk setiap ID
-            $barcodes[] = ['barcode' => $barcode, 'harga' => $harga]; // Simpan barcode ke array
+            $barcodes[] = ['barcode' => $barcode, 'harga' => $harga, 'nama' => $nama]; // Simpan barcode ke array
         }
+
         $pdf = Pdf::loadView('admin.produk.cetaklabel', compact('barcodes'));
-        
+
         $file_path = storage_path('app/public/barcodes.pdf');
+
         $pdf->save($file_path);
 
         return response()->json(['url' => asset('storage/barcodes.pdf')]);

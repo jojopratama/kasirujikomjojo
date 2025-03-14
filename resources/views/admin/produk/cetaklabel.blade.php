@@ -13,10 +13,10 @@
   <body>
     <div class="row">
         @foreach ($barcodes as $item)
-            <div class="col-3">
-                {!! $item['barcode'] !!}
-                <br>
-                {{ $item['harga'] }}
+            <div class="col-3" style="padding: 5px; margin: 5px;">
+                {{ @$item['nama'] }}
+                {!! @$item['barcode'] !!}
+                {{ rupiah(@$item['harga']) }}
             </div>
         @endforeach
     </div>
@@ -37,5 +37,5 @@
 </html>
 
 
-    
+
 

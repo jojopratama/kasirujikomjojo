@@ -196,36 +196,48 @@
         });
       });
 
+      $(document).on('click', '#btnCetakLabel', function() {
+        let id_produk = [];
+        $('input[name="id_produk[]"]:checked').each(function() {
+            id_produk.push($(this).val());
+        });
+
+        if (id_produk.length == 0) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Whooops!',
+              text: 'Silakan pilih produk yang ingin dicetak labelnya dengan mencentang checkbox terlebih dahulu.',
+              confirmButtonText: 'Ok'
+            })
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "{{ route('produk.cetakLabel') }}",
+            data: {
+                _token: "{{ csrf_token() }}",
+                id_produk: id_produk
+            },
+            dataType: "json",
+            success: function(data) {
+                window.open(data.url, '_blank');
+            },
+            error: function(data) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    confirmButtonText: 'Ok'
+                })
+            }
+        })
+    })
+
       Mola.inputNumber('[name="stok"]');
     });
   </script>
 
   <script>
-       $(document).on('click', '#btnCetakLabel', function() {
-            let id_produk = [];
-            $('input[name="id_produk[]"]:checked').each(function() {
-                id_produk.push($(this).val());  
-            });
-            $.ajax({
-                type: "POST",
-                url: "{{ route('produk.cetakLabel') }}",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    id_produk: id_produk
-                },
-                dataType: "json",
-                success: function(data) {
-                    window.open(data.url, '_blank');
-                },
-                error: function(data) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: data.message,
-                        confirmButtonText: 'Ok'
-                    })
-                }
-            })
-        })
-  </script>
+    script>
 @endsection
